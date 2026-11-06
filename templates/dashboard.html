@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% from "_macros.html" import status_badge, place %}
+{% block title %}My reports{% endblock %}
+{% block content %}
+<div class="row between mb">
+  <div><span class="eyebrow">Your account</span><h1 style="font-size:2.2rem;margin:0">My reports</h1></div>
+  <a class="btn btn-gold" href="{{ url_for('report') }}">New report</a>
+</div>
+{% if complaints %}
+<div class="c-list">
+  {% for c in complaints %}
+  <a class="c-item" href="{{ url_for('complaint_detail', public_id=c.public_id) }}">
+    <img src="{{ url_for('uploaded_file', filename=c.image_name) }}" alt="">
+    <div><h3>{{ c.title }}</h3>
+      <div class="muted small">{{ c.public_id }} · {{ c.category }} · {{ place(c) }}</div></div>
+    {{ status_badge(c.status) }}
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="card empty"><h3>No reports yet</h3><p>Spot something that needs fixing? Report it in under a minute.</p>
+  <a class="btn btn-gold" href="{{ url_for('report') }}">Report an issue</a></div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% from "_macros.html" import status_badge, place %}
+{% block title %}Admin desk{% endblock %}
+{% block content %}
+<span class="eyebrow">Administration</span>
+<h1 style="font-size:2.2rem">Admin desk</h1>
+<div class="grid mb" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">
+  {% for s, n in stats.items() %}<div class="stat"><b>{{ n }}</b><span class="muted small">{{ s }}</span></div>{% endfor %}
+</div>
+<div class="table-wrap"><table>
+  <thead><tr><th>ID</th><th>Issue</th><th>Reporter</th><th>Location</th><th>Priority</th><th>Status</th><th></th></tr></thead>
+  <tbody>
+  {% for c in complaints %}
+    <tr>
+      <td class="small muted">{{ c.public_id }}</td>
+      <td><strong>{{ c.title }}</strong><div class="muted small">{{ c.category }}</div>
+        {% if c.id in awaiting %}<span class="badge b-In-Progress">Citizen replied</span>{% endif %}
+        {% if c.duplicate_of %}<span class="badge b-gold">Possible duplicate</span>{% endif %}</td>
+      <td>{{ reporters.get(c.user_id, '—') }}</td>
+      <td class="small">{{ place(c) }}{% if c.latitude and c.longitude %}<div class="lock-note">GPS pinned</div>{% endif %}</td>
+      <td>{{ c.priority }}</td><td>{{ status_badge(c.status) }}</td>
+      <td><a class="btn btn-sm btn-gold" href="{{ url_for('admin_edit', public_id=c.public_id) }}">Review &amp; respond</a></td>
+    </tr>
+  {% else %}<tr><td colspan="7" class="empty">No reports yet.</td></tr>
+  {% endfor %}
+  </tbody></table></div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Join{% endblock %}
+{% block content %}
+<div class="auth">
+  <div class="auth-side"><span class="eyebrow">Join CivicSense</span><h2>Be the eyes of your neighbourhood.</h2><p class="muted" style="margin:0">Create a free account to report issues and follow their progress.</p></div>
+  <div class="auth-form">
+    <h2>Create account</h2><hr class="gold-rule">
+    <form method="post" novalidate>
+      {{ form.hidden_tag() }}
+      {% for f in [form.name, form.email, form.password, form.confirm] %}
+        <div class="field">{{ f.label }}{{ f(autocomplete="off") }}
+          {% for e in f.errors %}<div class="err">{{ e }}</div>{% endfor %}</div>
+      {% endfor %}
+      <button class="btn btn-gold btn-block btn-lg" type="submit">Create account</button>
+    </form>
+    <p class="small muted mt">Already a member? <a href="{{ url_for('login') }}">Sign in</a></p>
+  </div>
+</div>
+{% endblock %}

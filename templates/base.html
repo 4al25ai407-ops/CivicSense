@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f5f0">
+  <title>{% block title %}CivicSense AI{% endblock %} · CivicSense AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+<header class="nav">
+  <div class="container nav-in">
+    <a class="brand" href="{{ url_for('index') }}"><span class="brand-mark">C</span>Civic<em>Sense</em></a>
+    <nav class="nav-links">
+      {% if current_user.is_authenticated and current_user.role == 'admin' %}
+        <a class="btn btn-sm" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+        <a class="btn btn-sm" href="{{ url_for('admin_team') }}">Team</a>
+      {% elif current_user.is_authenticated %}
+        <a class="btn btn-sm" href="{{ url_for('dashboard') }}">Dashboard</a>
+      {% endif %}
+      {% if current_user.is_authenticated %}
+        {% if current_user.role != 'admin' %}
+          <a class="btn btn-sm btn-gold" href="{{ url_for('report') }}">Report an issue</a>
+        {% endif %}
+        <form method="post" action="{{ url_for('logout') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-sm" type="submit">Sign out</button>
+        </form>
+      {% else %}
+        <a class="btn btn-sm" href="{{ url_for('login') }}">Sign in</a>
+        <a class="btn btn-sm btn-gold" href="{{ url_for('register') }}">Join</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+<main>
+  <div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}<div class="flash {{ cat }}">{{ msg }}</div>{% endfor %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </div>
+</main>
+<footer class="footer"><div class="container row between">
+  <span>© CivicSense AI · Better cities, reported together.</span>
+  <span>Demo service · For emergencies call 112</span>
+</div></footer>
+{% block scripts %}{% endblock %}
+</body>
+</html>

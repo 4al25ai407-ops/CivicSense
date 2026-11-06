@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Sign in{% endblock %}
+{% block content %}
+<div class="auth">
+  <div class="auth-side"><span class="eyebrow">Welcome back</span><h2>Good to see you again.</h2><p class="muted" style="margin:0">Sign in to track your reports and read replies from the administrators.</p></div>
+  <div class="auth-form">
+    <h2>Sign in</h2><hr class="gold-rule">
+    <form method="post" novalidate>
+      {{ form.hidden_tag() }}
+      {% for f in [form.email, form.password] %}
+        <div class="field">{{ f.label }}{{ f(autocomplete="email" if f.name=="email" else "current-password") }}
+          {% for e in f.errors %}<div class="err">{{ e }}</div>{% endfor %}</div>
+      {% endfor %}
+      <button class="btn btn-gold btn-block btn-lg" type="submit">Sign in</button>
+    </form>
+    <p class="small mt"><a href="{{ url_for('forgot_password') }}">Forgot your password?</a></p>
+    <p class="small muted">New here? <a href="{{ url_for('register') }}">Create an account</a></p>
+  </div>
+</div>
+{% endblock %}

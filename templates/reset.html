@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Set new password{% endblock %}
+{% block content %}
+<div class="auth">
+  <div class="auth-side"><span class="eyebrow">Almost there</span><h2>Choose a new password.</h2><p class="muted" style="margin:0">Use at least 12 characters. A phrase of several words is easy to remember and hard to guess.</p></div>
+  <div class="auth-form">
+    <h2>New password</h2><hr class="gold-rule">
+    <form method="post" novalidate>
+      {{ form.hidden_tag() }}
+      {% for f in [form.password, form.confirm] %}
+        <div class="field">{{ f.label }}{{ f(autocomplete="new-password") }}
+          {% for e in f.errors %}<div class="err">{{ e }}</div>{% endfor %}</div>
+      {% endfor %}
+      <button class="btn btn-gold btn-block btn-lg" type="submit">Set new password</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

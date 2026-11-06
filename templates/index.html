@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% from "_macros.html" import place %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<section class="hero">
+  <div>
+    <span class="eyebrow">Civic reporting, refined</span>
+    <h1>Your city, <em>cared for</em> — one report at a time.</h1>
+    <p class="lead">Photograph a pothole, an overflowing bin, a leak or a dark streetlight. Pin the exact spot with GPS, and follow every response from the administrators in a single private thread.</p>
+    <div class="row">
+      {% if current_user.is_authenticated and current_user.role != 'admin' %}
+        <a class="btn btn-gold btn-lg" href="{{ url_for('report') }}">Report an issue</a>
+        <a class="btn btn-lg" href="{{ url_for('dashboard') }}">My reports</a>
+      {% elif current_user.is_authenticated %}
+        <a class="btn btn-gold btn-lg" href="{{ url_for('admin_dashboard') }}">Open admin desk</a>
+      {% else %}
+        <a class="btn btn-gold btn-lg" href="{{ url_for('register') }}">Get started</a>
+        <a class="btn btn-lg" href="{{ url_for('login') }}">Sign in</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="hero-art" aria-hidden="true">
+    <svg viewBox="0 0 400 400" fill="none" stroke="rgba(212,175,55,.28)" stroke-width="1">
+      <g>{% for i in range(1,10) %}<line x1="{{ i*40 }}" y1="0" x2="{{ i*40 }}" y2="400"/><line x1="0" y1="{{ i*40 }}" x2="400" y2="{{ i*40 }}"/>{% endfor %}</g>
+      <path d="M0 300 C90 250 140 330 220 270 S350 200 400 230" stroke="rgba(241,217,138,.55)" stroke-width="2"/>
+      <circle cx="220" cy="150" r="64" fill="rgba(212,175,55,.08)"/><circle cx="220" cy="150" r="34" fill="rgba(212,175,55,.12)"/>
+      <path d="M220 118c-14 0-25 11-25 25 0 19 25 44 25 44s25-25 25-44c0-14-11-25-25-25z" fill="#d4af37" stroke="#1a1405" stroke-width="2"/>
+      <circle cx="220" cy="143" r="9" fill="#1a1405"/>
+    </svg>
+    <div class="float-chip" style="left:7%;top:10%"><b>GPS-precise</b>Pin the exact spot</div>
+    <div class="float-chip" style="right:7%;bottom:12%"><b>Direct replies</b>Talk to the admin team</div>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="stat"><b>{{ totals.total }}</b><span class="muted">Issues reported</span></div>
+  <div class="stat"><b>{{ totals.resolved }}</b><span class="muted">Issues resolved</span></div>
+  <div class="stat"><b>24/7</b><span class="muted">Report anytime</span></div>
+</section>
+
+<section class="mb">
+  <span class="eyebrow">How it works</span>
+  <h2>Three steps from sighting to solution</h2>
+  <hr class="gold-rule">
+  <div class="grid g3">
+    <div class="card"><div class="step-no">01</div><h3>Capture</h3><p class="muted">Take a photo and describe what you see. Our AI can suggest the right category.</p></div>
+    <div class="card"><div class="step-no">02</div><h3>Pinpoint</h3><p class="muted">Use your phone's GPS, or drop a pin on the map. The address fills in for you.</p></div>
+    <div class="card"><div class="step-no">03</div><h3>Follow up</h3><p class="muted">Administrators review, update the status and reply to you directly.</p></div>
+  </div>
+</section>
+
+<section>
+  <span class="eyebrow">Recently resolved</span>
+  <h2>Problems solved</h2><hr class="gold-rule">
+  {% if recent %}
+    <div class="grid g2">
+    {% for c in recent %}
+      <div class="card gold"><span class="badge b-Resolved">Resolved</span>
+        <h3 style="margin-top:12px">{{ c.title }}</h3>
+        <p class="muted small" style="margin:0">{{ c.category }} · {{ place(c) }}</p></div>
+    {% endfor %}
+    </div>
+  {% else %}<div class="card empty">Resolved issues will be showcased here.</div>{% endif %}
+</section>
+{% endblock %}

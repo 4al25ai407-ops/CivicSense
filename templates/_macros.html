@@ -1,0 +1,5 @@
+{% macro status_badge(s) -%}
+<span class="badge b-{{ s|replace(' ','-') }}">{{ s }}</span>
+{%- endmacro %}
+{% macro place(c) -%}{{ c.location or 'Not provided' }}{%- endmacro %}
+{% macro has_gps(c) -%}{{ '1' if (c.latitude and c.longitude) else '' }}{%- endmacro %}

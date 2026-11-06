@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% from "_macros.html" import status_badge, place %}
+{% block title %}{{ complaint.public_id }}{% endblock %}
+{% block head %}{% if complaint.latitude and complaint.longitude %}<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">{% endif %}{% endblock %}
+{% block content %}
+<a class="small" href="{{ url_for('admin_dashboard' if current_user.role == 'admin' else 'dashboard') }}">&larr; Back</a>
+<div class="row between mt mb">
+  <div><span class="eyebrow">{{ complaint.public_id }}</span><h1 style="font-size:2.1rem;margin:0">{{ complaint.title }}</h1></div>
+  {{ status_badge(complaint.status) }}
+</div>
+<div class="grid g2" style="align-items:start">
+  <div class="card"><img class="photo" src="{{ url_for('uploaded_file', filename=complaint.image_name) }}" alt="Reported issue"></div>
+  <div class="card">
+    <dl class="kv" style="margin:0">
+      <dt>Category</dt><dd>{{ complaint.category }}</dd>
+      <dt>Priority</dt><dd>{{ complaint.priority }}</dd>
+      <dt>Reported</dt><dd>{{ complaint.created_at.strftime('%d %b %Y') }}</dd>
+      <dt>Location</dt><dd>{{ place(complaint) }}</dd>
+    </dl>
+    <hr class="gold-rule mt">
+    <p style="white-space:pre-wrap">{{ complaint.description }}</p>
+    {% if complaint.admin_note %}<div class="notice"><strong>Latest update:</strong> {{ complaint.admin_note }}</div>{% endif %}
+    {% if complaint.duplicate_of %}<p class="muted small mt">A similar report may already exist near this location.</p>{% endif %}
+  </div>
+</div>
+{% if complaint.latitude and complaint.longitude %}
+<div class="card mt"><div class="row between"><h3 style="margin:0">Pinned location</h3>
+  <a class="btn btn-sm" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query={{ complaint.latitude }},{{ complaint.longitude }}">Open in Google Maps</a></div>
+  <div id="view-map" class="map sm mt" data-lat="{{ complaint.latitude }}" data-lng="{{ complaint.longitude }}"></div>
+  <p class="lock-note mt" style="margin-bottom:0">{{ '%.5f'|format(complaint.latitude) }}, {{ '%.5f'|format(complaint.longitude) }}</p></div>
+{% endif %}
+{% if updates %}
+<div class="card mt"><h3>Activity history</h3><hr class="gold-rule">
+  <ul class="timeline">{% for u in updates %}<li><span class="muted small">{{ u.created_at.strftime('%d %b %Y %H:%M') }} UTC</span><br>{{ u.action }}: {{ u.details }}</li>{% endfor %}</ul></div>
+{% endif %}
+{% include "_thread.html" %}
+{% endblock %}
+{% block scripts %}{% if complaint.latitude and complaint.longitude %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+<script src="{{ url_for('static', filename='js/map_view.js') }}" defer></script>{% endif %}{% endblock %}

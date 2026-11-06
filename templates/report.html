@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Report an issue{% endblock %}
+{% block head %}<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">{% endblock %}
+{% block content %}
+<span class="eyebrow">New report</span>
+<h1 style="font-size:2.3rem">Report a civic issue</h1>
+<p class="muted">Please avoid photographing identifiable people, vehicle number plates or private property where possible.</p>
+<form method="post" enctype="multipart/form-data" novalidate>
+  {{ form.hidden_tag() }}
+  {{ form.latitude(type="hidden") }}{{ form.longitude(type="hidden") }}
+  <div class="grid g2" style="align-items:start">
+    <div class="card">
+      <div class="field"><label for="photo">Photograph · JPEG, PNG or WEBP · max 5 MB</label>
+        <input type="file" id="photo" name="photo" accept="image/jpeg,image/png,image/webp" required>
+        <img id="preview" class="preview" alt="Photo preview"></div>
+      <div class="field">{{ form.title.label }}{{ form.title(placeholder="e.g. Deep pothole near the bus stop") }}
+        {% for e in form.title.errors %}<div class="err">{{ e }}</div>{% endfor %}</div>
+      <div class="field">{{ form.category.label }}{{ form.category() }}</div>
+      <div class="field">{{ form.description.label }}{{ form.description(rows=5, placeholder="What is the problem, and how serious is it?") }}
+        {% for e in form.description.errors %}<div class="err">{{ e }}</div>{% endfor %}</div>
+    </div>
+    <div class="card">
+      <h3>Where is it?</h3>
+      <p class="muted small">Tap the button for a GPS fix, or tap the map to drop a pin. The address fills in automatically and you can edit it.</p>
+      <button type="button" id="gps-btn" class="btn btn-gold btn-block">Use my current location</button>
+      <div id="gps-status" class="gps-status"><span class="gps-dot"></span><span id="gps-text">Location not set yet.</span></div>
+      <div id="map" class="map"></div>
+      <div class="field mt">{{ form.location.label }}{{ form.location(placeholder="Area, street or landmark") }}
+        {% for e in form.location.errors %}<div class="err">{{ e }}</div>{% endfor %}</div>
+      <div class="notice">AI category suggestions are advisory. Please check the selected category before submitting. Do not submit emergencies through this demo; contact the relevant emergency service.</div>
+    </div>
+  </div>
+  <div class="mt"><button class="btn btn-gold btn-lg btn-block" type="submit">Submit report</button></div>
+</form>
+{% endblock %}
+{% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+<script src="{{ url_for('static', filename='js/report.js') }}" defer></script>
+{% endblock %}

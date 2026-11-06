@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% from "_macros.html" import status_badge, place %}
+{% block title %}Review {{ complaint.public_id }}{% endblock %}
+{% block head %}{% if complaint.latitude and complaint.longitude %}<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">{% endif %}{% endblock %}
+{% block content %}
+<a class="small" href="{{ url_for('admin_dashboard') }}">&larr; Back to admin desk</a>
+<div class="row between mt mb">
+  <div><span class="eyebrow">{{ complaint.public_id }}</span><h1 style="font-size:2rem;margin:0">{{ complaint.title }}</h1></div>
+  {{ status_badge(complaint.status) }}
+</div>
+<div class="grid g-side" style="align-items:start">
+  <div>
+    <div class="card"><img class="photo" src="{{ url_for('uploaded_file', filename=complaint.image_name) }}" alt="Reported issue">
+      <dl class="kv mt" style="margin-bottom:0">
+        <dt>Category</dt><dd>{{ complaint.category }}</dd>
+        <dt>Reported</dt><dd>{{ complaint.created_at.strftime('%d %b %Y, %H:%M') }} UTC</dd>
+        <dt>Location</dt><dd>{{ place(complaint) }}</dd>
+        {% if complaint.ai_suggestion %}<dt>AI suggestion</dt><dd>{{ complaint.ai_suggestion }} ({{ '%.0f'|format((complaint.ai_confidence or 0)*100) }}%) · advisory</dd>{% endif %}
+      </dl>
+      <hr class="gold-rule mt"><p style="white-space:pre-wrap;margin:0">{{ complaint.description }}</p>
+    </div>
+    {% if complaint.latitude and complaint.longitude %}
+    <div class="card mt"><div class="row between"><h3 style="margin:0">Pinned location</h3>
+      <a class="btn btn-sm" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query={{ complaint.latitude }},{{ complaint.longitude }}">Open in Google Maps</a></div>
+      <div id="view-map" class="map sm mt" data-lat="{{ complaint.latitude }}" data-lng="{{ complaint.longitude }}"></div></div>
+    {% endif %}
+  </div>
+  <div class="card gold">
+    <h3>Update &amp; respond</h3><hr class="gold-rule">
+    <form method="post" novalidate>
+      {{ form.hidden_tag() }}
+      <div class="field">{{ form.status.label }}{{ form.status() }}</div>
+      <div class="field">{{ form.priority.label }}{{ form.priority() }}</div>
+      <div class="field">{{ form.admin_note.label }}{{ form.admin_note(placeholder="Short public status note") }}</div>
+      <div class="field">{{ form.reply.label }}{{ form.reply(rows=4, placeholder="Write a message the citizen will see…") }}</div>
+      {% for f in [form.status, form.priority, form.admin_note, form.reply] %}{% for e in f.errors %}<div class="err">{{ e }}</div>{% endfor %}{% endfor %}
+      <button class="btn btn-gold btn-block btn-lg" type="submit">Save update</button>
+    </form>
+  </div>
+</div>
+{% include "_thread.html" %}
+{% endblock %}
+{% block scripts %}{% if complaint.latitude and complaint.longitude %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+<script src="{{ url_for('static', filename='js/map_view.js') }}" defer></script>{% endif %}{% endblock %}

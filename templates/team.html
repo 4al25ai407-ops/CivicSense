@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Admin team{% endblock %}
+{% block content %}
+<span class="eyebrow">Administration</span>
+<div class="row between mb"><h1 style="font-size:2.2rem;margin:0">Admin team</h1>
+  <span class="badge b-gold">{{ admins|length }} of {{ max_admins }} seats used</span></div>
+<div class="table-wrap mb"><table>
+  <thead><tr><th>Name</th><th>Email</th><th></th></tr></thead>
+  <tbody>
+  {% for a in admins %}
+    <tr><td><strong>{{ a.name }}</strong>{% if a.id == current_user.id %} <span class="badge b-gold">You</span>{% endif %}</td>
+      <td>{{ a.email }}</td>
+      <td style="text-align:right">{% if a.id != current_user.id %}
+        <form method="post" action="{{ url_for('admin_remove', user_id=a.id) }}" style="margin:0">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-sm" type="submit">Remove admin access</button></form>{% endif %}</td></tr>
+  {% endfor %}
+  </tbody></table></div>
+{% if full %}
+  <div class="notice">All {{ max_admins }} admin seats are used. Remove an admin above to add another.</div>
+{% else %}
+<div class="grid g2" style="align-items:start">
+  <div class="card gold"><h3>Add a new admin</h3><hr class="gold-rule">
+    <form method="post" novalidate>
+      {{ create_form.hidden_tag() }}
+      {% for f in [create_form.name, create_form.email, create_form.password] %}
+        <div class="field">{{ f.label }}{{ f(autocomplete="off") }}{% for e in f.errors %}<div class="err">{{ e }}</div>{% endfor %}</div>
+      {% endfor %}
+      {{ create_form.submit(class="btn btn-gold btn-block") }}
+    </form></div>
+  <div class="card"><h3>Promote an existing user</h3><hr class="gold-rule">
+    <p class="muted small">For someone who already registered as a citizen.</p>
+    <form method="post" novalidate>
+      {{ promote_form.hidden_tag() }}
+      <div class="field">{{ promote_form.email.label }}{{ promote_form.email(autocomplete="off") }}{% for e in promote_form.email.errors %}<div class="err">{{ e }}</div>{% endfor %}</div>
+      {{ promote_form.submit(class="btn btn-gold btn-block") }}
+    </form></div>
+</div>
+{% endif %}
+<p class="muted small mt">Removing admin access keeps the person's account and history; they simply become a regular user.</p>
+{% endblock %}

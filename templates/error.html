@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}{{ code }}{% endblock %}
+{% block content %}
+<div class="card empty" style="padding:70px 20px"><div class="step-no" style="font-size:4.5rem">{{ code }}</div>
+  <h2>{{ message }}</h2><a class="btn btn-gold mt" href="{{ url_for('index') }}">Return home</a></div>
+{% endblock %}

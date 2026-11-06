@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Forgot password{% endblock %}
+{% block content %}
+<div class="auth">
+  <div class="auth-side"><span class="eyebrow">Account recovery</span><h2>Locked out? We'll get you back in.</h2><p class="muted" style="margin:0">Enter your email and we'll send a secure link to choose a new password. The link works once and expires in 30 minutes.</p></div>
+  <div class="auth-form">
+    <h2>Forgot password</h2><hr class="gold-rule">
+    {% if demo_link %}
+      <div class="notice mb"><strong>Demo mode:</strong> email is not configured, so here is your reset link:<br><a href="{{ demo_link }}">Reset my password</a></div>
+    {% endif %}
+    <form method="post" novalidate>
+      {{ form.hidden_tag() }}
+      <div class="field">{{ form.email.label }}{{ form.email(autocomplete="email") }}
+        {% for e in form.email.errors %}<div class="err">{{ e }}</div>{% endfor %}</div>
+      <button class="btn btn-gold btn-block btn-lg" type="submit">Send reset link</button>
+    </form>
+    <p class="small muted mt"><a href="{{ url_for('login') }}">&larr; Back to sign in</a></p>
+  </div>
+</div>
+{% endblock %}
